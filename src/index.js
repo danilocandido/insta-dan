@@ -13,7 +13,7 @@ ReactDOM.render(
   (<Router history={browserHistory}>
     <Route path="/" component={Login}></Route>
     <Route path="/timeline" component={App}></Route>
-  </Router>), 
+  </Router>),
   document.getElementById('root')
 );
 registerServiceWorker();
