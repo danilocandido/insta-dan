@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import Login from './components/Login';
 import {Router, Route, browserHistory} from 'react-router';
+import Logout from './components/Logout';
 import registerServiceWorker from './registerServiceWorker';
 
 import './css/reset.css'
@@ -21,6 +22,7 @@ ReactDOM.render(
   (<Router history={browserHistory}>
     <Route path="/" component={Login}></Route>
     <Route path="/timeline" component={App} onEnter={verificaAutenticacao}></Route>
+    <Route path="/logout" component={Logout}></Route>
   </Router>),
   document.getElementById('root')
 );
