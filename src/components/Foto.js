@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router';
-import PubSub from 'pubsub-js';
 
 class FotoAtualizacoes extends Component {
 
@@ -35,40 +34,12 @@ class FotoAtualizacoes extends Component {
 
 class FotoInfo extends Component {
 
-  constructor(props){
-    super(props);
-    this.state = {likers: this.props.foto.likers, comentarios: this.props.foto.comentarios}
-  }
-
-  //Quando usa PubSub o subscribe normalmente é no componentWillMount
-  componentWillMount() {
-    PubSub.subscribe('atualiza-liker', (nomeTopico, infoLiker) => {
-      if(this.props.foto.id === infoLiker.fotoId){
-        const possivelLiker = this.state.likers.find(liker => liker.login === infoLiker.liker.login);
-        if(possivelLiker === undefined){
-          const novosLikers = this.state.likers.concat(infoLiker.liker);
-          this.setState({likers: novosLikers});
-        }else{
-          const novosLikers = this.state.likers.filter(liker => liker.login !== infoLiker.liker.login);
-          this.setState({likers: novosLikers});
-        }
-      }
-    });
-
-    PubSub.subscribe('novos-comentarios', (nomeTopico, infoComentario) =>{
-      if(this.props.foto.id === infoComentario.fotoId){
-        const novosComentarios = this.state.comentarios.concat(infoComentario.novoComentario);
-        this.setState({comentarios: novosComentarios});
-      }
-    });
-  }
-
   render() {
     return(
       <div className="foto-info">
         <div className="foto-info-likes">
           {
-            this.state.likers.map(liker => {
+            this.props.foto.likers.map(liker => {
               return <Link key={liker.login} href={`/timeline/${liker.login}`}>{liker.login},</Link>
             })
           }
@@ -83,7 +54,7 @@ class FotoInfo extends Component {
 
         <ul className="foto-info-comentarios">
           {
-            this.state.comentarios.map(comentario => {
+            this.props.foto.comentarios.map(comentario => {
               return(
                 <li className="comentario" key={comentario.id}>
                   <Link to={`/timeline/${comentario.login}`} className="foto-info-autor">{comentario.login} </Link>
@@ -127,7 +98,12 @@ export default class FotoItem extends Component {
         <FotoHeader foto={this.props.foto}/>
         <img alt="foto" className="foto-src" src={this.props.foto.urlFoto}/>
         <FotoInfo foto={this.props.foto}/>
+
+        {/*Este é igual ao usado abaixo com spread operator, o que acontece é que o es6 passa todos os atributos
+           do props por você.
         <FotoAtualizacoes foto={this.props.foto} like={this.props.like} comenta={this.props.comenta}/>
+        */}
+        <FotoAtualizacoes {...this.props}/>
 
       </div>
     )
