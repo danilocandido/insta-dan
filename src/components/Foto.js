@@ -72,6 +72,7 @@ class FotoInfo extends Component {
     this.state = {likers: this.props.foto.likers, comentarios: this.props.foto.comentarios}
   }
 
+  //Quando usa PubSub o subscribe normalmente é no componentWillMount
   componentWillMount() {
     PubSub.subscribe('atualiza-liker', (nomeTopico, infoLiker) => {
       if(this.props.foto.id === infoLiker.fotoId){

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import FotoItem from './Foto'
+import PubSub from 'pubsub-js';
 
 export default class Timeline extends Component {
 
@@ -26,6 +27,13 @@ export default class Timeline extends Component {
   // https://jwt.io/
   componentDidMount(){
     this.carregaFotos();
+  }
+
+  //Quando usa PubSub o subscribe normalmente é no componentWillMount
+  componentWillMount() {
+    PubSub.subscribe('timeline', (nomeTopico, timeline) => {
+      this.setState({fotos: timeline});
+    });
   }
 
   componentWillReceiveProps(nextProps) {
