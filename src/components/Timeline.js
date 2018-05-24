@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import FotoItem from './Foto'
-import LogicaTimeline from '../logicas/LogicaTimeline';
 
 export default class Timeline extends Component {
 
@@ -8,7 +7,6 @@ export default class Timeline extends Component {
     super(props);
     this.state = {fotos: []};
     this.login = this.props.login;
-    this.logicaTimeline = new LogicaTimeline([]);
   }
 
   carregaFotos(){
@@ -20,7 +18,7 @@ export default class Timeline extends Component {
       urlPerfil = `http://localhost:8080/api/public/fotos/${this.login}`;
     }
 
-    this.logicaTimeline.lista(urlPerfil);
+    this.props.store.lista(urlPerfil);
   }
 
   // https://jwt.io/
@@ -30,7 +28,7 @@ export default class Timeline extends Component {
 
   //Quando usa PubSub o subscribe normalmente é no componentWillMount
   componentWillMount() {
-    this.logicaTimeline.subscribe(fotos => {
+    this.props.store.subscribe(fotos => {
       this.setState({fotos});
     });
   }
@@ -43,11 +41,11 @@ export default class Timeline extends Component {
   }
 
   like(fotoId) {
-    this.logicaTimeline.like(fotoId);
+    this.props.store.like(fotoId);
   }
 
   comenta(fotoId, textoDoComentario) {
-    this.logicaTimeline.comenta(fotoId, textoDoComentario);
+    this.props.store.comenta(fotoId, textoDoComentario);
   }
 
   render() {
