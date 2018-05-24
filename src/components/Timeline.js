@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import FotoItem from './Foto'
 import PubSub from 'pubsub-js';
+import LogicaTimeline from '../logicas/LogicaTimeline';
 
 export default class Timeline extends Component {
 
@@ -8,6 +9,7 @@ export default class Timeline extends Component {
     super(props);
     this.state = {fotos: []};
     this.login = this.props.login;
+    this.logicaTimeline = new LogicaTimeline();
   }
 
   carregaFotos(){
@@ -64,18 +66,7 @@ export default class Timeline extends Component {
   }
 
   like(fotoId) {
-    let api = `http://localhost:8080/api/fotos/${fotoId}/like?X-AUTH-TOKEN=${localStorage.getItem('auth-token')}`;
-    fetch(api, {method: 'POST'})
-      .then(response => {
-        if(response.ok) {
-          return response.json();
-        } else {
-          throw new Error("não foi possível realizar o like da foto");
-        }
-    })
-    .then(liker => {
-      PubSub.publish('atualiza-liker', { fotoId, liker });
-    });
+    this.logicaTimeline.like(fotoId);
   }
 
   comenta(fotoId, textoDoComentario) {
@@ -106,7 +97,7 @@ export default class Timeline extends Component {
         {
           this.state.fotos.map(foto => <FotoItem key={foto.id} 
                                                  foto={foto} 
-                                                 like={this.like}
+                                                 like={this.like.bind(this)}
                                                  comenta={this.comenta}/>)
         }
       </div>
