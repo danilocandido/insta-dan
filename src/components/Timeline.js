@@ -9,7 +9,7 @@ export default class Timeline extends Component {
     super(props);
     this.state = {fotos: []};
     this.login = this.props.login;
-    this.logicaTimeline = new LogicaTimeline();
+    this.logicaTimeline = new LogicaTimeline([]);
   }
 
   carregaFotos(){
@@ -23,7 +23,10 @@ export default class Timeline extends Component {
 
     fetch(urlPerfil)
     .then(response => response.json())
-    .then(fotos => this.setState({fotos: fotos}) );
+    .then(fotos => {
+      this.setState({fotos: fotos})
+      this.logicaTimeline = new LogicaTimeline(fotos);
+    });
   }
 
   // https://jwt.io/
@@ -35,20 +38,6 @@ export default class Timeline extends Component {
   componentWillMount() {
     PubSub.subscribe('timeline', (nomeTopico, timeline) => {
       this.setState({fotos: timeline});
-    });
-
-    PubSub.subscribe('atualiza-liker', (nomeTopico, infoLiker) => {
-      const fotoAchada = this.state.fotos.find(foto => foto.id === infoLiker.fotoId);
-      fotoAchada.likeada = !fotoAchada.likeada;
-      
-      const possivelLiker = fotoAchada.likers.find(liker => liker.login === infoLiker.liker.login);
-      if(possivelLiker === undefined){
-        fotoAchada.likers.push(infoLiker.liker);
-      }else{
-        const novosLikers = fotoAchada.likers.filter(liker => liker.login !== infoLiker.liker.login);
-        fotoAchada.likers = novosLikers;
-      }
-      this.setState({fotos: this.state.fotos});
     });
 
     PubSub.subscribe('novos-comentarios', (nomeTopico, infoComentario) =>{

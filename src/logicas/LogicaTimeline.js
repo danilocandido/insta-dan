@@ -2,6 +2,10 @@ import PubSub from 'pubsub-js';
 
 export default class LogicaTimeline {
 
+  constructor(fotos) {
+    this.fotos = fotos;
+  }
+
   like(fotoId) {
     let api = `http://localhost:8080/api/fotos/${fotoId}/like?X-AUTH-TOKEN=${localStorage.getItem('auth-token')}`;
     fetch(api, {method: 'POST'})
@@ -13,7 +17,17 @@ export default class LogicaTimeline {
         }
     })
     .then(liker => {
-      PubSub.publish('atualiza-liker', { fotoId, liker });
+      const fotoAchada = this.fotos.find(foto => foto.id === fotoId);
+      fotoAchada.likeada = !fotoAchada.likeada;
+      
+      const possivelLiker = fotoAchada.likers.find(likerAtual => likerAtual.login === liker.login);
+      if(possivelLiker === undefined){
+        fotoAchada.likers.push(liker);
+      }else{
+        const novosLikers = fotoAchada.likers.filter(likerAtual => likerAtual.login !== liker.login);
+        fotoAchada.likers = novosLikers;
+      }
+      PubSub.publish('timeline', this.fotos);
     });
   }
 }
